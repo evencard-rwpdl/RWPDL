@@ -9,5 +9,17 @@
     "tier": "1.04",
     "igd": "Easy Demon",
     "records": [
+        {
+            "user": "Big T",
+            "percent": 100,
+            "hz": 60,
+            "chromebook": true
+        },
+        {
+            "user": "big p",
+            "percent": 100,
+            "hz": 60,
+            "chromebook": true
+        }
     ]
 }
