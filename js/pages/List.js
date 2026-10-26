@@ -72,7 +72,7 @@ export default {
                                 <p>{{ record.user }}</p>
                             </td>
                             <td class="chromebook">
-                                <img v-if="record.chromebook" :src="store.dark ? 'assets/chrome-logo-dark.svg' : 'assets/chrome-logo.svg'" alt="Chromebook">
+                                <img v-if="record.chromebook" :src="store.dark ? 'assets/chrome-logo.svg' : 'assets/chrome-logo-dark.svg'" alt="Chromebook">
                             </td>
                             <td class="hz">
                                 <p>{{ record.hz }}Hz</p>
