@@ -1,0 +1,19 @@
+{
+    "id": 358750,
+    "name": "Dash",
+    "author": "Robtop James",
+    "creators": ["Robtop James"],
+    "verifier": "Antz",
+    "verification": "https://www.youtube.com/watch?v=yznyQwCLnaM",
+    "percentToQualify": "74",
+    "tier": ">1.00",
+    "igd": "Insane",
+    "records": [
+        {
+            "user": "El Rafan",
+            "percent": 100,
+            "hz": 60,
+            "chromebook": true
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "id": 9223838,
+    "name": "Clubstep",
+    "author": "Robtop James",
+    "creators": ["Robtop James"],
+    "verifier": "Big T",
+    "verification": "https://www.youtube.com/watch?v=gok5ShDXxg4",
+    "percentToQualify": "85",
+    "tier": "2.83",
+    "igd": "Easy Demon",
+    "records": [
+        {
+            "user": "V1ntage",
+            "percent": 100,
+            "hz": 60,
+            "chromebook": true
+        }
+    ]
+}
