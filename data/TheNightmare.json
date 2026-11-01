@@ -20,6 +20,12 @@
             "percent": 100,
             "hz": 60,
             "chromebook": true
+        },
+        {
+            "user": "Antz",
+            "percent": 100,
+            "hz": 60,
+            "chromebook": true
         }
     ]
 }
