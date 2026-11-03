@@ -28,6 +28,8 @@
                 .eq('approved', true)
                 .order('listid', { ascending: true });
 
+            console.log(data, error);
+
             if (error) {
             list.innerHTML = `<p>some thing wrong</p>`;
             return;
