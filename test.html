@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <div>
+        <div id="list">
+            <p>not löded yet</p>
+        </div>
+    </div>
+    
+    <script>
+
+        const supabaseUrl = 'https://teeahpmcehxydogahogt.supabase.co';
+        const supabaseKey = 'sb_publishable_Mb4wN-RHZjPYLW71o2e9rA_zARj3bTi';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        async function getList() {
+            const list = document.getElementById('list');
+            const { data, error} = await supabaseClient
+                .from('levels')
+                .select('*')
+                .eq('approved', true)
+                .order('listid', { ascending: true });
+
+            if (error) {
+            list.innerHTML = `<p>some thing wrong</p>`;
+            return;
+            }
+
+            list.innerHTML = data.map(item => `
+                <div>
+                    <h3>${escapeHtml(item.name)}</h3>
+                    <p>${escapeHtml(item.firstvictor)}</p>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        getList();
+    </script>
+
+</body>
+
+</html>
