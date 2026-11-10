@@ -22,11 +22,11 @@
 
         async function getList() {
             const list = document.getElementById('list');
-            const { data, error} = await supabaseClient
+            const { data, error } = await supabaseClient
                 .from('levels')
                 .select('*')
                 .eq('approved', true)
-                .order('place', { ascending: true });
+                .order('rank', { ascending: true });
 
             console.log(data, error);
 

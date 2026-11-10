@@ -5,11 +5,13 @@ import { round, score } from './score.js';
  */
 const dir = 'data';
 
-const supabaseUrl = 'https://teeahpmcehxydogahogt.supabase.co';
-const supabaseKey = 'sb_publishable_Mb4wN-RHZjPYLW71o2e9rA_zARj3bTi';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
 
 export async function fetchList() {
+
+    const supabaseUrl = 'https://teeahpmcehxydogahogt.supabase.co';
+    const supabaseKey = 'sb_publishable_Mb4wN-RHZjPYLW71o2e9rA_zARj3bTi';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
     const listResult = await supabase
     .from(levels)
