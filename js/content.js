@@ -14,7 +14,7 @@ export async function fetchList() {
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
     const listResult = await supabase
-    .from(levels)
+    .from('levels')
     .select('*')
     .eq('approved', true);
 
