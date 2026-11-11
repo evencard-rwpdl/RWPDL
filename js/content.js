@@ -11,9 +11,9 @@ export async function fetchList() {
 
     const supabaseUrl = 'https://teeahpmcehxydogahogt.supabase.co';
     const supabaseKey = 'sb_publishable_Mb4wN-RHZjPYLW71o2e9rA_zARj3bTi';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-    const listResult = await supabase
+    const listResult = await supabaseClient
     .from('levels')
     .select('*')
     .eq('approved', true);
@@ -22,8 +22,8 @@ export async function fetchList() {
         const list = await listResult.json();
         return await Promise.all(
             list.map(async (path, rank) => {
-                const levelResult = await supabase
-                    .from(levels)
+                const levelResult = await supabaseClient
+                    .from('levels')
                     .select('*')
                     .eq('approved', true)
                     .eq('listid', path);
