@@ -1,14 +1,10 @@
 export default {
     props: {
-        author: {
+        creator: {
             type: String,
             required: true,
         },
-        creators: {
-            type: Array,
-            required: true,
-        },
-        verifier: {
+        firstvictor: {
             type: String,
             required: true,
         },
@@ -18,42 +14,29 @@ export default {
             <template v-if="selfVerified">
                 <div class="type-title-sm">Creator & Verifier</div>
                 <p class="type-body">
-                    <span>{{ author }}</span>
+                    <span>{{ creator }}</span>
                 </p>
             </template>
-            <template v-else-if="creators.length === 0">
+            <template v-else="">
                 <div class="type-title-sm">Creator</div>
                 <p class="type-body">
-                    <span>{{ author }}</span>
+                    <span>{{ creator }}</span>
                 </p>
                 <div class="type-title-sm">Verifier</div>
                 <p class="type-body">
-                    <span>{{ verifier }}</span>
-                </p>
-            </template>
-            <template v-else>
-                <div class="type-title-sm">Creators</div>
-                <p class="type-body">
-                    <template v-for="(creator, index) in creators" :key="\`creator-\$\{creator\}\`">
-                        <span >{{ creator }}</span
-                        ><span v-if="index < creators.length - 1">, </span>
-                    </template>
-                </p>
-                <div class="type-title-sm">First Victor</div>
-                <p class="type-body">
-                    <span>{{ verifier }}</span>
+                    <span>{{ firstvictor }}</span>
                 </p>
             </template>
             <div class="type-title-sm">Publisher</div>
             <p class="type-body">
-                <span>{{ author }}</span>
+                <span>{{ creator }}</span>
             </p>
         </div>
     `,
 
     computed: {
         selfVerified() {
-            return this.author === this.verifier && this.creators.length === 0;
+            return this.creator === this.firstvictor;
         },
     },
 };

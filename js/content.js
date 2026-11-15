@@ -5,39 +5,123 @@ import { round, score } from './score.js';
  */
 const dir = 'data';
 
+export async function fetchHighestTier() {
 
+    const supabaseUrl = 'https://teeahpmcehxydogahogt.supabase.co';
+    const supabaseKey = 'sb_publishable_Mb4wN-RHZjPYLW71o2e9rA_zARj3bTi';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    const listId = await supabaseClient
+    .from('list')
+    .select('listid')
+    .eq('place', 1)
+    .single();
+
+    const listIdNumeric = listId.data.listid;
+
+    console.log(listId);
+
+    console.log(listIdNumeric);
+
+    const highestTier = await supabaseClient
+    .from('levels')
+    .select('tier')
+    .eq('listid', listIdNumeric)
+    .single();
+
+    console.log(highestTier);
+
+    const highestTierNumeric = highestTier.data.tier;
+
+    console.log(highestTierNumeric);
+
+    return highestTierNumeric;
+}
 
 export async function fetchList() {
 
     const supabaseUrl = 'https://teeahpmcehxydogahogt.supabase.co';
     const supabaseKey = 'sb_publishable_Mb4wN-RHZjPYLW71o2e9rA_zARj3bTi';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
+/*
     const listResult = await supabaseClient
-    .from('levels')
-    .select('*')
-    .eq('approved', true);
+    .from('list')
+    .select('listid')
+    .order('rank', { ascending: true });
 
-    try {
-        const list = await listResult.json();
-        return await Promise.all(
-            list.map(async (path, rank) => {
-                const levelResult = await supabaseClient
-                    .from('levels')
-                    .select('*')
-                    .eq('approved', true)
-                    .eq('listid', path);
+    const approvedLevelCount = await supabaseClient
+    .from('levels')
+    .select('*', { count: 'exact' })
+    .eq('approved', true).count;
+
+    for (let path = 1; path <= approvedLevelCount; path++) {
+        const levelResult = await supabaseClient
+            .from('levels')
+            .select('*')
+            .eq('approved', true)
+            .eq('listid', path);
+        listResult.map()
+    }
+    return await Promise.all(
+            listResult.map(async (path, rank) => {
+                const levelResult = await fetch(`${dir}/${path}.json`);
                 try {
                     const level = await levelResult.json();
                     return [
                         {
-                            ...level
+                            ...level,
+                            path,
                         },
                         null,
                     ];
                 } catch {
-                    console.error(`Failed to load level #${rank + 1} ${path}.`);
+                    console.error(`Failed to load level #${rank} ${path}.`);
                     return [null, path];
+                }
+            }),
+        );
+*/
+
+    const {data: listResultRaw, error: listError} = await supabaseClient
+    .from('list')
+    .select('listid')
+    .order('place', { ascending: true });
+    console.log(listResultRaw);
+    if (listError) console.error(listError);
+    const listResult = listResultRaw.map((row) => row.listid);
+    
+    try {
+        return await Promise.all(
+            listResult.map(async (listid, rank) => {
+                const levelResult = await supabaseClient
+                    .from('levels')
+                    .select('*')
+                    .eq('approved', true)
+                    .eq('listid', listid)
+                    .single();
+                
+                const levelRecords = await supabaseClient
+                    .from('records')
+                    .select('*')
+                    .eq('listid', listid)
+                    .order('percent', { ascending: false });
+                
+                console.log(levelRecords.data);
+
+                console.log(levelResult.data);
+                try {
+                    const level = levelResult.data;
+                    return [
+                        {
+                            ...level,
+                            listid,
+                            records: levelRecords.data
+                        },
+                        null,
+                    ];
+                } catch {
+                    console.error(`Failed to load level #${rank} ${listid}.`);
+                    return [null, listid];
                 }
             }),
         );
@@ -58,7 +142,14 @@ export async function fetchEditors() {
 }
 
 export async function fetchLeaderboard() {
+
+    const supabaseUrl = 'https://teeahpmcehxydogahogt.supabase.co';
+    const supabaseKey = 'sb_publishable_Mb4wN-RHZjPYLW71o2e9rA_zARj3bTi';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
     const list = await fetchList();
+
+    const highestTier = await fetchHighestTier();
 
     const scoreMap = {};
     const errs = [];
@@ -70,8 +161,8 @@ export async function fetchLeaderboard() {
 
         // Verification
         const verifier = Object.keys(scoreMap).find(
-            (u) => u.toLowerCase() === level.verifier.toLowerCase(),
-        ) || level.verifier;
+            (u) => u.toLowerCase() === level.firstvictor.toLowerCase(),
+        ) || level.firstvictor;
         scoreMap[verifier] ??= {
             verified: [],
             completed: [],
@@ -81,15 +172,15 @@ export async function fetchLeaderboard() {
         verified.push({
             rank: rank + 1,
             level: level.name,
-            score: score(rank + 1, 100, level.percentToQualify),
+            score: score(rank + 1, 100, level.qualify, level.tier, highestTier),
             link: level.verification,
         });
 
         // Records
         level.records.forEach((record) => {
             const user = Object.keys(scoreMap).find(
-                (u) => u.toLowerCase() === record.user.toLowerCase(),
-            ) || record.user;
+                (u) => u.toLowerCase() === record.holder.toLowerCase(),
+            ) || record.holder;
             scoreMap[user] ??= {
                 verified: [],
                 completed: [],
@@ -100,7 +191,7 @@ export async function fetchLeaderboard() {
                 completed.push({
                     rank: rank + 1,
                     level: level.name,
-                    score: score(rank + 1, 100, level.percentToQualify),
+                    score: score(rank + 1, 100, level.qualify, level.tier, highestTier),
                     link: record.link,
                 });
                 return;
@@ -110,7 +201,7 @@ export async function fetchLeaderboard() {
                 rank: rank + 1,
                 level: level.name,
                 percent: record.percent,
-                score: score(rank + 1, record.percent, level.percentToQualify),
+                score: score(rank + 1, record.percent, level.qualify, level.tier, highestTier),
                 link: record.link,
             });
         });

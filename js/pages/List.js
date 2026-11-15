@@ -40,7 +40,6 @@ export default {
                 <div class="level" v-if="level">
                     <h1>{{ level.name }}</h1>
                     <LevelAuthors :author="level.creator" :creators="level.creator" :verifier="level.firstvictor"></LevelAuthors>
-                    <iframe class="video" id="videoframe" :src="level.video" frameborder="0"></iframe>
                     <ul class="stats">
                         <li>
                             <div class="type-title-sm">Points when completed</div>
@@ -60,7 +59,7 @@ export default {
                         </li>
                     </ul>
                     <h2>Records</h2>
-                    <p v-if="selected + 1 <= 75"><strong>{{ level.percentToQualify }}%</strong> or better to qualify</p>
+                    <p v-if="selected + 1 <= 75"><strong>{{ level.qualify }}%</strong> or better to qualify</p>
                     <p v-else-if="selected +1 <= 150"><strong>100%</strong> or better to qualify</p>
                     <p v-else>This level does not accept new records.</p>
                     <table class="records">
@@ -69,13 +68,13 @@ export default {
                                 <p>{{ record.percent }}%</p>
                             </td>
                             <td class="user">
-                                <p>{{ record.user }}</p>
+                                <p>{{ record.holder }}</p>
                             </td>
                             <td class="chromebook">
                                 <img v-if="record.chromebook" :src="store.dark ? 'assets/chrome-logo-dark.svg' : 'assets/chrome-logo.svg'" alt="Chromebook">
                             </td>
                             <td class="hz">
-                                <p>{{ record.hz }}Hz</p>
+                                <p>60Hz</p>
                             </td>
                         </tr>
                     </table>
