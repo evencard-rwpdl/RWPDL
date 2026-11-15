@@ -1,7 +1,7 @@
 import { store } from "../main.js";
 import { embed } from "../util.js";
 import { score } from "../score.js";
-import { fetchEditors, fetchList } from "../content.js";
+import { fetchEditors, fetchList, fetchHighestTier } from "../content.js";
 
 import Spinner from "../components/Spinner.js";
 import LevelAuthors from "../components/List/LevelAuthors.js";
@@ -25,7 +25,7 @@ export default {
                 <table class="list" v-if="list">
                     <tr v-for="([level, err], i) in list">
                         <td class="rank">
-                            <p v-if="i + 1 <= 150" class="type-label-lg">#{{ i + 1 }}</p>
+                            <p v-if="i + 1 <= 150" class="type-label-lg">#{{ i + 1}}</p>
                             <p v-else class="type-label-lg">Legacy</p>
                         </td>
                         <td class="level" :class="{ 'active': selected == i, 'error': !level }">
@@ -39,11 +39,11 @@ export default {
             <div class="level-container">
                 <div class="level" v-if="level">
                     <h1>{{ level.name }}</h1>
-                    <LevelAuthors :author="level.creator" :creators="level.creator" :verifier="level.firstvictor"></LevelAuthors>
+                    <LevelAuthors :author="level.creator" :creator="level.creator" :firstvictor="level.firstvictor"></LevelAuthors>
                     <ul class="stats">
                         <li>
                             <div class="type-title-sm">Points when completed</div>
-                            <p>{{ score(selected + 1, 100, level.qualify) }}</p>
+                            <p>{{ score(selected + 1,100, level.qualify, level.tier, highestTier) }}</p>
                         </li>
                         <li>
                             <div class="type-title-sm">ID</div>
@@ -117,6 +117,7 @@ export default {
     data: () => ({
         list: [],
         editors: [],
+        highestTier: 0,
         loading: true,
         selected: 0,
         errors: [],
@@ -143,6 +144,7 @@ export default {
         // Hide loading spinner
         this.list = await fetchList();
         this.editors = await fetchEditors();
+        this.highestTier = await fetchHighestTier();
 
         // Error handling
         if (!this.list) {

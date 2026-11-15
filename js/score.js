@@ -17,6 +17,8 @@ const scale = 3;
 
 export function score(rank, percent, minPercent, tier, highestTier) {
 
+    console.log(rank, percent, minPercent, tier, highestTier);
+
     if (rank > 150) {
         return 0;
     }
@@ -42,7 +44,7 @@ export function score(rank, percent, minPercent, tier, highestTier) {
     }
 
     console.log(Math.round(score));
-    console.log(Math.round(score + "e+3") + "e-3");
+    console.log(Math.round(score * 1000) / 1000);
 
     if (percent != 100) {
         

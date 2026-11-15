@@ -27,10 +27,6 @@ export default {
                     <span>{{ firstvictor }}</span>
                 </p>
             </template>
-            <div class="type-title-sm">Publisher</div>
-            <p class="type-body">
-                <span>{{ creator }}</span>
-            </p>
         </div>
     `,
 

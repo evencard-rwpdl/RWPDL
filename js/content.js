@@ -143,10 +143,6 @@ export async function fetchEditors() {
 
 export async function fetchLeaderboard() {
 
-    const supabaseUrl = 'https://teeahpmcehxydogahogt.supabase.co';
-    const supabaseKey = 'sb_publishable_Mb4wN-RHZjPYLW71o2e9rA_zARj3bTi';
-    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
     const list = await fetchList();
 
     const highestTier = await fetchHighestTier();
