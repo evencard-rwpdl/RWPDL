@@ -6,11 +6,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
-<body>
+<body id="body">
 
     <div>
         <div id="list">
-            <p>not löded yet</p>
+            <form id="recordsForm" class = "submitForm">
+            <label for="holder" class="label">Recordid:</label>
+            <input type="text" id="holder" name="holder">
+            <label type="authKey" class="label">Key:</label>
+            <input type="number" id="authkey" name="authkey">
+            <input type="submit" class="label" value="Submit">
+        </form>
         </div>
     </div>
     
@@ -20,36 +26,63 @@
         const supabaseKey = 'sb_publishable_Mb4wN-RHZjPYLW71o2e9rA_zARj3bTi';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        async function getList() {
-            const list = document.getElementById('list');
-            const { data, error } = await supabaseClient
-                .from('levels')
+        async function getUnapprovedRecords() {
+            const list = document.getElementById('records');
+            const unapprovedRecords = await supabaseClient
+                .from('records')
                 .select('*')
-                .eq('approved', true)
-                .order('rank', { ascending: true });
+                .eq('approved', false)
+                .order('recordid', { ascending: true });
 
-            console.log(data, error);
+            console.log(unapprovedRecords);
 
-            if (error) {
-            list.innerHTML = `<p>some thing wrong</p>`;
-            return;
+            for (let i = 0; i < unapprovedRecords.data.length; i++) {
+                let empty = document.createElement("p");
+                let holder = document.createElement("p").textContent = unapprovedRecords.data[i].holder + ", "; 
+                let percent = document.createElement("p").textContent = unapprovedRecords.data[i].percent + "%, ";
+                let recordid = document.createElement("p").textContent = unapprovedRecords.data[i].recordid + ", ";
+
+                console.log(unapprovedRecords.data[i].holder)
+
+                let name = await supabaseClient
+                .from('levels')
+                .select('name')
+                .eq('listid', unapprovedRecords.data[i].listid)
+
+                let levelname = document.createElement("p").textContent = name.data[0].name;
+
+                console.log(name.data[0].name)
+
+                let body = document.getElementById("body");
+                body.append(empty);
+                body.append(holder);
+                body.append(percent);
+                body.append(recordid);
+                body.append(levelname);
+
+
             }
 
-            list.innerHTML = data.map(item => `
-                <div>
-                    <h3>${escapeHtml(item.name)}</h3>
-                    <p>${escapeHtml(item.firstvictor)}</p>
-                </div>
-            `).join('');
         }
+        getUnapprovedRecords();
 
-        function escapeHtml(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
-        }
+        const form = document.getElementById("recordsForm");
 
-        getList();
+            form.addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+
+                const formOutput = new FormData(form);
+
+                console.log(formOutput.get("holder"))
+                console.log(formOutput.get("authkey"))
+
+                const { data, error } = await supabaseClient.rpc('approve_record', {record_id: Number(formOutput.get("holder")), key: Number(formOutput.get("authkey"))});
+
+                console.log({ data, error });
+
+            });
+                
     </script>
 
 </body>
