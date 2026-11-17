@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=1024" />
+        <title>Submit Records</title>
+
+        <link rel="icon" href="list_icon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@500;700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" type="text/css" href="css/reset.css" />
+        <link rel="stylesheet" type="text/css" href="css/typography.css" />
+        <link rel="stylesheet" type="text/css" href="css/main.css" />
+        <link rel="stylesheet" type="text/css" href="css/pages/list.css" />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="css/pages/leaderboard.css"
+        />
+        <link rel="stylesheet" type="text/css" href="css/pages/roulette.css" />
+        <link rel="stylesheet" type="text/css" href="css/components/nav.css" />
+        <link rel="stylesheet" type="text/css" href="css/components/btn.css" />
+        <link rel="stylesheet" type="text/css" href="css/submitrecords.css" />
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="css/components/tabs.css"
+        />
+        <script src="https://unpkg.com/vue@3.2.31/dist/vue.global.js"></script>
+        <script src="https://unpkg.com/vue-router@4.0.14/dist/vue-router.global.prod.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    </head>
+    <body id="app">
+        <header :class="{ dark: store.dark }">
+            <div class="logo">
+                <h2>Record Submitter</h2>
+            </div>
+            <nav class="nav">
+                <div class="nav__actions">
+                    <button
+                        class="nav__icon"
+                        @click.prevent="store.toggleDark()"
+                    >
+                        <img
+                            :src="store.dark ? 'assets/light.svg' : 'assets/dark.svg'"
+                            alt=""
+                        />
+                    </button>
+                    
+                    <a class="nav__icon" href="https://www.youtube.com/watch?v=2Ax-TWSceLs">
+                        <img src="assets/discord.svg" alt="Discord Logo" />
+                    </a>
+                    <a
+                        class="nav__cta type-label-lg"
+                        href="index.html"
+                        target="_self"
+                        >List</a
+                    >
+                </div>
+            </nav>
+        </header>
+        <div class = "submitFormDiv">
+        <form id="recordsForm" class = "submitForm">
+            <label for="holder" class="label">Record Holder:</label>
+            <input type="text" id="holder" name="holder">
+            <p class="label"></p>
+            <label for="levels" class="label">Level:</label>
+            <select id="levels" name="levels">
+                <option>Loading...</option>
+            </select>
+            <p class="label"></p>
+            <label for="percent" class="label">Percent:</label>
+            <input type="number" id="percent" name="percent" step="1" min="0" max="100">
+            <p class="label"></p>
+            <label type="authKey" class="label">Key:</label>
+            <input type="number" id="authkey" name="authkey">
+            <p class="label"></p>
+            <input type="submit" class="label" value="Submit">
+        </form>
+        </div>
+        
+        <router-view :class="{ dark: store.dark }"></router-view>
+
+        <script src="js/submitUtils.js"></script>
+        <script type="module">
+
+            const supabaseUrl = 'https://teeahpmcehxydogahogt.supabase.co';
+            const supabaseKey = 'sb_publishable_Mb4wN-RHZjPYLW71o2e9rA_zARj3bTi';
+            const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+            const form = document.getElementById("recordsForm");
+
+            form.addEventListener("submit", async function(event) {
+
+                event.preventDefault();
+                
+                const formOutput = new FormData(form);
+                const levelLastVictor = await supabaseClient
+
+                    .from('records')
+                    .select('*', { count: 'exact' })
+                    .eq('listid', formOutput.get("levels"))
+                    .eq('approved', true);
+                
+                const lastRecordID = await supabaseClient
+
+                    .from('records')
+                    .select('*', { count: 'exact' , head: true });
+
+                console.log(lastRecordID);
+
+                const recordID = parseInt((lastRecordID.count + 1));
+
+                console.log(recordID)
+
+                const { data, error } = await supabaseClient.rpc('submit_record', {record_id: recordID, list_id: formOutput.get("levels"), holder: formOutput.get("holder"), percent: parseInt(formOutput.get("percent")), victor_order: levelLastVictor.count + 1, key: Number(formOutput.get("authkey"))});
+
+                console.log({ data, error });
+
+                /*
+                if (data) {
+
+                    document.getElementById("feedback_text").innerHTML = "Submitted";
+
+                }
+                else if (!data) {
+
+                    document.getElementById("feedback_text").innerHTML = "Wrong key";
+
+                }
+                */
+
+            });
+        </script>
+    </body>
+</html>

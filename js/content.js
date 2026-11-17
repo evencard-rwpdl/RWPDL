@@ -104,6 +104,7 @@ export async function fetchList() {
                     .from('records')
                     .select('*')
                     .eq('listid', listid)
+                    .eq('approved', true)
                     .order('percent', { ascending: false });
                 
                 console.log(levelRecords.data);
